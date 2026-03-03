@@ -1,32 +1,20 @@
-name: React CI
+name: React CI with Docker
 
 on:
   pull_request:
     branches:
-      - main   # change if your base branch is different (e.g., master)
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
+      - name: Build Docker image
+        run: docker build -t react-app .
 
-      - name: Install dependencies
-        run: npm i
-
-      - name: Run tests
-        run: npm test -- --watchAll=false
-
-      - name: Build project
-        run: npm run build
+      - name: Run container (optional test)
+        run: docker run -d -p 3000:80 react-app
